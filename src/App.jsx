@@ -2,11 +2,12 @@ import React from 'react';
 import { useState, useRef, useEffect } from "react";
 
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600&family=Space+Grotesk:wght=400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
+  /* Base Reset & Smoothness */
   .tp-root {
-    font-family: 'Inter', sans-serif;
-    background: #0a0a0f;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #0d0e12;
     height: 100vh;
     height: -webkit-fill-available;
     width: 100vw;       
@@ -15,248 +16,267 @@ const styles = `
     flex-direction: column;
     position: relative;
     overflow: hidden;
+    color: #e3e4e8;
   }
 
-  /* =======================================================
-     ANIMATION MOTION ALA GEMINI (Aura Fluid & Glowing)
-     ======================================================= */
-  @keyframes gemini-motion-1 {
-    0% {
-      transform: translate(0px, 0px) scale(1) rotate(0deg);
-      filter: blur(80px);
-    }
-    33% {
-      transform: translate(60px, -40px) scale(1.25) rotate(120deg);
-      filter: blur(100px);
-      background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%);
-    }
-    66% {
-      transform: translate(-40px, 50px) scale(0.85) rotate(240deg);
-      filter: blur(70px);
-    }
-    100% {
-      transform: translate(0px, 0px) scale(1) rotate(360deg);
-      filter: blur(80px);
-    }
+  /* Soft Ambient Background Aura (Gak Mencolok Mata) */
+  @keyframes soft-glow {
+    0% { transform: translate(0px, 0px) scale(1); }
+    50% { transform: translate(40px, -30px) scale(1.1); filter: blur(120px); }
+    100% { transform: translate(0px, 0px) scale(1); }
   }
 
-  @keyframes gemini-motion-2 {
-    0% {
-      transform: translate(0px, 0px) scale(1) rotate(0deg);
-      filter: blur(60px);
-    }
-    50% {
-      transform: translate(-70px, 40px) scale(1.35) rotate(-180deg);
-      filter: blur(90px);
-      background: radial-gradient(circle, rgba(20,184,166,0.2) 0%, transparent 70%);
-    }
-    100% {
-      transform: translate(0px, 0px) scale(1) rotate(-360deg);
-      filter: blur(60px);
-    }
+  .tp-bg-glow {
+    position: absolute;
+    top: -10%;
+    right: 5%;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.06) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+    animation: soft-glow 15s infinite ease-in-out;
   }
 
-  .tp-bg-orb1 {
-    position: absolute; top: -80px; right: -80px;
-    width: 550px; height: 550px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(99,102,241,0.16) 0%, transparent 70%);
-    pointer-events: none; z-index: 0;
-    animation: gemini-motion-1 18s infinite linear;
-    will-change: transform, filter;
-  }
-
-  .tp-bg-orb2 {
-    position: absolute; bottom: -80px; left: -80px;
-    width: 500px; height: 500px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(20,184,166,0.12) 0%, transparent 70%);
-    pointer-events: none; z-index: 0;
-    animation: gemini-motion-2 22s infinite linear;
-    will-change: transform, filter;
-  }
-
-  /* Header Kunci Mati di Atas */
+  /* Premium Soft Header */
   .tp-header {
-    padding: 16px 24px;
-    display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 0.5px solid rgba(255,255,255,0.07);
+    padding: 18px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(13, 14, 18, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     z-index: 10;
-    background: rgba(10,10,15,0.8);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     flex-shrink: 0;
   }
 
-  .tp-logo-group { display: flex; align-items: center; gap: 10px; }
+  .tp-logo-group { display: flex; align-items: center; gap: 12px; }
 
   .tp-logo-icon {
-    width: 38px; height: 38px; border-radius: 11px;
-    background: linear-gradient(135deg, #6366f1, #14b8a6);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700; font-size: 14px; color: #fff; letter-spacing: -0.5px;
-    box-shadow: 0 0 20px rgba(99,102,241,0.3);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #8b5cf6, #c084fc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.15);
   }
 
-  .tp-logo-text { display: flex; flex-direction: column; gap: 1px; }
+  .tp-logo-text { display: flex; flex-direction: column; }
   .tp-logo-name {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700; font-size: 18px; color: #fff; letter-spacing: -0.5px;
-    line-height: 1;
+    font-weight: 600;
+    font-size: 17px;
+    color: #fff;
+    letter-spacing: -0.3px;
   }
   .tp-logo-by {
-    font-size: 10px; color: rgba(255,255,255,0.3);
-    font-weight: 400; letter-spacing: 0.5px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.35);
+    font-weight: 400;
   }
 
+  /* Minimalist Status Pill */
   .tp-status-pill {
-    display: flex; align-items: center; gap: 6px;
-    background: rgba(20,184,166,0.1);
-    border: 0.5px solid rgba(20,184,166,0.3);
-    border-radius: 20px; padding: 5px 12px;
-  }
-  .tp-status-pill.error {
-    background: rgba(248,113,113,0.1);
-    border-color: rgba(248,113,113,0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 30px;
+    padding: 6px 14px;
+    transition: all 0.3s ease;
   }
   .tp-status-pill.thinking {
-    background: rgba(99,102,241,0.1);
-    border-color: rgba(99,102,241,0.3);
+    background: rgba(139, 92, 246, 0.06);
+    border-color: rgba(139, 92, 246, 0.2);
   }
   .tp-status-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: #14b8a6;
-    animation: pulse-dot 2s ease-in-out infinite;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
   }
-  .tp-status-pill.error .tp-status-dot { background: #f87171; animation: none; }
-  .tp-status-pill.thinking .tp-status-dot { background: #6366f1; }
-  @keyframes pulse-dot {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.35; }
+  .tp-status-pill.thinking .tp-status-dot {
+    background: #a78bfa;
+    animation: pulse-dot 1.5s infinite ease-in-out;
   }
-  .tp-status-text { font-size: 11px; color: #14b8a6; font-weight: 500; }
-  .tp-status-pill.error .tp-status-text { color: #f87171; }
-  .tp-status-pill.thinking .tp-status-text { color: #818cf8; }
+  .tp-status-text { font-size: 12px; color: rgba(255, 255, 255, 0.65); font-weight: 500; }
+  .tp-status-pill.thinking .tp-status-text { color: #c084fc; }
 
-  /* Area Chat Scrollable Area */
+  /* Chat Area - Autoscroll Optimized */
   .tp-messages {
     flex: 1; 
     overflow-y: auto; 
-    padding: 24px 20px;
-    display: flex; flex-direction: column; gap: 16px;
-    position: relative; z-index: 2;
-    scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.08) transparent;
+    padding: 30px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: relative;
+    z-index: 2;
+    scroll-behavior: smooth;
   }
 
+  /* Welcome Screen Elegant */
   .tp-empty {
-    margin: auto; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 10px;
-    padding: 40px 24px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 380px;
+    padding: 20px;
   }
   .tp-empty-icon {
-    width: 60px; height: 60px; border-radius: 18px;
-    background: linear-gradient(135deg, rgba(99,102,241,0.18), rgba(20,184,166,0.12));
-    border: 0.5px solid rgba(99,102,241,0.25);
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 6px;
+    font-size: 32px;
+    margin-bottom: 16px;
+    opacity: 0.85;
   }
-  .tp-empty-title { font-size: 17px; font-weight: 500; color: rgba(255,255,255,0.7); }
-  .tp-empty-sub { font-size: 13px; color: rgba(255,255,255,0.25); text-align: center; max-width: 240px; line-height: 1.6; }
+  .tp-empty-title { font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+  .tp-empty-sub { font-size: 13.5px; color: rgba(255, 255, 255, 0.4); line-height: 1.6; }
 
+  /* Soft Bubble Chat Layout */
   .tp-msg {
-    display: flex; gap: 10px; align-items: flex-end;
-    animation: msg-in 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    display: flex;
+    gap: 14px;
+    max-width: 85%;
+    animation: msg-fade-in 0.35s ease;
   }
-  @keyframes msg-in {
-    from { opacity: 0; transform: translateY(12px) scale(0.96); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+  @keyframes msg-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-  .tp-msg.user { flex-direction: row-reverse; }
+  .tp-msg.user { align-self: flex-end; flex-direction: row-reverse; }
 
   .tp-avatar {
-    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
-    background: linear-gradient(135deg, #6366f1, #14b8a6);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 600; color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    flex-shrink: 0;
   }
-  .tp-avatar.user-av {
-    background: rgba(255,255,255,0.08);
-    border: 0.5px solid rgba(255,255,255,0.15);
-  }
-
-  .tp-bubble {
-    max-width: 75%; padding: 11px 15px;
-    border-radius: 18px 18px 18px 5px;
-    font-size: 14px; line-height: 1.65; color: rgba(255,255,255,0.88);
-    background: rgba(255,255,255,0.07);
-    border: 0.5px solid rgba(255,255,255,0.08);
-    word-break: break-word; white-space: pre-wrap;
-  }
-  .tp-msg.user .tp-bubble {
-    border-radius: 18px 18px 5px 18px;
-    background: linear-gradient(135deg, rgba(99,102,241,0.3), rgba(20,184,166,0.2));
-    border: 0.5px solid rgba(99,102,241,0.25);
+  .tp-msg.user .tp-avatar {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(192, 132, 252, 0.2));
+    border-color: rgba(139, 92, 246, 0.3);
     color: #fff;
   }
 
-  .tp-typing {
-    display: flex; gap: 4px; align-items: center; padding: 3px 0;
+  .tp-bubble {
+    padding: 14px 18px;
+    border-radius: 18px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    word-break: break-word;
+    white-space: pre-wrap;
   }
+  .tp-msg.user .tp-bubble {
+    background: rgba(139, 92, 246, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    color: #fff;
+  }
+
+  /* Typing Loader */
+  .tp-typing { display: flex; gap: 5px; align-items: center; padding: 6px 4px; }
   .tp-typing span {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: rgba(255,255,255,0.4);
-    animation: blink 1.2s ease-in-out infinite;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    animation: blink 1.4s infinite both;
   }
   .tp-typing span:nth-child(2) { animation-delay: 0.2s; }
   .tp-typing span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes blink {
-    0%, 80%, 100% { opacity: 0.25; transform: scale(0.9); }
-    40% { opacity: 1; transform: scale(1.2); }
-  }
+  @keyframes blink { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
 
-  /* Kotak Chat Kunci Mati di Bawah Display */
+  /* Premium Bottom Input Area */
   .tp-bottom {
-    background: rgba(10,10,15,0.85);
+    background: rgba(13, 14, 18, 0.8);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-top: 0.5px solid rgba(255,255,255,0.07);
-    padding: 14px 16px env(safe-area-inset-bottom, 16px);
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    padding: 16px 24px env(safe-area-inset-bottom, 20px);
     z-index: 10;
     flex-shrink: 0;
   }
 
-  .tp-err {
-    font-size: 11.5px; color: #f87171;
-    margin-bottom: 8px; padding-left: 2px; line-height: 1.5;
+  .tp-input-container {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
-  .tp-input-row { display: flex; gap: 10px; align-items: flex-end; }
+  .tp-input-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 20px;
+    padding: 8px 8px 8px 18px;
+    transition: border-color 0.25s ease;
+  }
+  .tp-input-row:focus-within {
+    border-color: rgba(139, 92, 246, 0.35);
+    background: rgba(255, 255, 255, 0.04);
+  }
 
   .tp-textarea {
-    flex: 1; background: rgba(255,255,255,0.06);
-    border: 0.5px solid rgba(255,255,255,0.1);
-    border-radius: 16px; padding: 12px 16px;
-    font-size: 14px; color: #fff; font-family: 'Inter', sans-serif;
-    resize: none; outline: none; line-height: 1.5;
-    transition: border-color 0.2s; min-height: 46px;
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 8px 0;
+    font-size: 14.5px;
+    color: #fff;
+    font-family: inherit;
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+    min-height: 24px;
+    max-height: 140px;
   }
-  .tp-textarea:focus { border-color: rgba(99,102,241,0.45); }
-  .tp-textarea::placeholder { color: rgba(255,255,255,0.2); }
+  .tp-textarea::placeholder { color: rgba(255, 255, 255, 0.25); }
 
   .tp-send {
-    width: 46px; height: 46px; border-radius: 14px; border: none; cursor: pointer;
-    background: linear-gradient(135deg, #6366f1, #14b8a6);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; transition: transform 0.15s, opacity 0.15s;
-    box-shadow: 0 0 16px rgba(99,102,241,0.3);
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
   }
-  .tp-send:hover { transform: scale(1.07); }
-  .tp-send:active { transform: scale(0.93); }
-  .tp-send:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+  .tp-send svg { stroke: #0d0e12; }
+  .tp-send:hover { transform: scale(1.04); background: rgba(255,255,255,0.9); }
+  .tp-send:disabled { opacity: 0.15; cursor: not-allowed; transform: none; background: #fff; }
 
   .tp-footer-text {
-    text-align: center; margin-top: 8px;
-    font-size: 10px; color: rgba(255,255,255,0.12); letter-spacing: 0.4px;
+    text-align: center;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.2);
+    letter-spacing: 0.2px;
   }
+  
+  .tp-err { font-size: 12px; color: #f87171; padding-left: 4px; }
 `;
 
 function TypingIndicator() {
@@ -286,16 +306,14 @@ function Message({ role, content, isTyping }) {
       if (index >= content.length) {
         clearInterval(intervalId);
       }
-    }, 20);
+    }, 15); // Kecepatan ngetik dimatangkan jadi 15ms biar kerasa gesit tapi dapet motion-nya
 
     return () => clearInterval(intervalId);
   }, [content, isUser, isTyping]);
 
   return (
     <div className={`tp-msg${isUser ? " user" : ""}`}>
-      <div className={`tp-avatar${isUser ? " user-av" : ""}`}>
-        {isUser ? "G" : "AI"}
-      </div>
+      <div className="tp-avatar">{isUser ? "U" : "AI"}</div>
       <div className="tp-bubble">
         {isTyping ? <TypingIndicator /> : displayedText}
       </div>
@@ -310,27 +328,32 @@ export default function TechPI() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("ready");
-  const messagesEndRef = useRef(null);
+
+  const messagesContainerRef = useRef(null);
   const textareaRef = useRef(null);
 
+  // Perbaikan Bug Auto-Scroll: scroll langsung diarahkan ke total scrollHeight container secara instan pas ketik/terima data
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   }, [messages, loading]);
-
-  const statusClass = status === "error" ? "error" : status === "thinking..." ? "thinking" : "";
 
   async function send() {
     if (loading || !input.trim()) return;
 
     const userText = input.trim();
     const newMsgs = [...messages, { role: "user", content: userText }];
+
     setMessages(newMsgs);
     setInput("");
     setError("");
     setLoading(true);
     setStatus("thinking...");
 
-    if (textareaRef.current) textareaRef.current.style.height = "auto";
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
 
     try {
       const res = await fetch(endpoint, {
@@ -342,23 +365,21 @@ export default function TechPI() {
       if (!res.ok) throw new Error("HTTP " + res.status);
       const data = await res.json();
 
-      const reply =
-        data.reply ||
-        data.response ||
-        data.message ||
-        data.content ||
-        data.choices?.[0]?.message?.content ||
-        JSON.stringify(data);
+      const reply = data.reply || data.response || JSON.stringify(data);
 
       setMessages([...newMsgs, { role: "assistant", content: reply }]);
       setStatus("ready");
     } catch (e) {
-      setError("Gagal konek: " + e.message);
-      setStatus("error");
+      setError("Connection loose: " + e.message);
+      setStatus("ready");
     }
 
     setLoading(false);
-    textareaRef.current?.focus();
+
+    // Cegah layar ngeloncat balik: fokus dikembalikan dengan aman tanpa paksaan window scroll
+    setTimeout(() => {
+      textareaRef.current?.focus({ preventScroll: true });
+    }, 50);
   }
 
   function handleKey(e) {
@@ -378,8 +399,7 @@ export default function TechPI() {
     <>
       <style>{styles}</style>
       <div className="tp-root">
-        <div className="tp-bg-orb1" />
-        <div className="tp-bg-orb2" />
+        <div className="tp-bg-glow" />
 
         <header className="tp-header">
           <div className="tp-logo-group">
@@ -389,24 +409,18 @@ export default function TechPI() {
               <span className="tp-logo-by">by Glendon</span>
             </div>
           </div>
-          <div className={`tp-status-pill ${statusClass}`}>
+          <div className={`tp-status-pill ${status === "thinking..." ? "thinking" : ""}`}>
             <div className="tp-status-dot" />
-            <span className="tp-status-text">{status}</span>
+            <span className="tp-status-text">{status === "thinking..." ? "Thinking" : "Ready"}</span>
           </div>
         </header>
 
-        <div className="tp-messages">
+        <div className="tp-messages" ref={messagesContainerRef}>
           {messages.length === 0 && !loading && (
             <div className="tp-empty">
-              <div className="tp-empty-icon">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(99,102,241,0.85)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                  <path d="M2 17l10 5 10-5" />
-                  <path d="M2 12l10 5 10-5" />
-                </svg>
-              </div>
-              <div className="tp-empty-title">Halo! Gw TechPI</div>
-              <div className="tp-empty-sub">Mulai chat untuk memulai simulasi interview Tech Lead lo.</div>
+              <div className="tp-empty-icon">✨</div>
+              <div className="tp-empty-title">TechPI AI Interviewer</div>
+              <div className="tp-empty-sub">Simulasi interview teknis bersama Tech Lead berpengalaman. Sapa "Halo" untuk menguji skill lo.</div>
             </div>
           )}
 
@@ -414,40 +428,35 @@ export default function TechPI() {
             <Message key={i} role={m.role} content={m.content} />
           ))}
 
-          {loading && (
-            <Message role="assistant" isTyping />
-          )}
-
-          <div ref={messagesEndRef} />
+          {loading && <Message role="assistant" isTyping />}
         </div>
 
         <div className="tp-bottom">
-          {error && <div className="tp-err">{error}</div>}
-
-          <div className="tp-input-row">
-            <textarea
-              ref={textareaRef}
-              className="tp-textarea"
-              rows={1}
-              value={input}
-              onChange={handleTextarea}
-              onKeyDown={handleKey}
-              placeholder="Ketik pesan..."
-            />
-            <button
-              className="tp-send"
-              onClick={send}
-              disabled={loading || !input.trim()}
-              aria-label="Kirim"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13" />
-                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-              </svg>
-            </button>
+          <div className="tp-input-container">
+            {error && <div className="tp-err">{error}</div>}
+            <div className="tp-input-row">
+              <textarea
+                ref={textareaRef}
+                className="tp-textarea"
+                rows={1}
+                value={input}
+                onChange={handleTextarea}
+                onKeyDown={handleKey}
+                placeholder="Message TechPI..."
+              />
+              <button
+                className="tp-send"
+                onClick={send}
+                disabled={loading || !input.trim()}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13" />
+                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
+              </button>
+            </div>
+            <div className="tp-footer-text">TechPI v2.0 • System Clean Mode</div>
           </div>
-
-          <div className="tp-footer-text">TechPI · by Glendon</div>
         </div>
       </div>
     </>
