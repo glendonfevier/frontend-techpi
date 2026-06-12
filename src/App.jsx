@@ -367,7 +367,7 @@ export default function TechPI() {
                 </svg>
               </button>
             </div>
-            <div className="tp-footer-text">TechPI • Elegant Charcoal Version</div>
+            <div className="tp-footer-text">TechPI • Made By Glendon</div>
           </div>
         </div>
       </div>
