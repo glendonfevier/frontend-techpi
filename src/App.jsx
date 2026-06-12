@@ -280,7 +280,8 @@ export default function TechPI() {
       const data = await res.json();
       const reply = data.reply || data.response || JSON.stringify(data);
 
-      setMessages([...newMsgs, { role: "assistant", content: reply }]);
+      // #FIX UTAMA: Mengubah role dari 'assistant' menjadi 'model' agar dikenali oleh history Gemini di Python
+      setMessages([...newMsgs, { role: "model", content: reply }]);
       setStatus("ready");
     } catch (e) {
       setError("Connection loose: " + e.message);
@@ -337,10 +338,11 @@ export default function TechPI() {
           )}
 
           {messages.map((m, i) => (
+            /* FIX KEDUA: Di sinilah role 'model' atau 'user' dipetakan dengan pas */
             <Message key={i} role={m.role} content={m.content} />
           ))}
 
-          {loading && <Message role="assistant" isTyping />}
+          {loading && <Message role="model" isTyping />}
         </div>
 
         <div className="tp-bottom">
