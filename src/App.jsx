@@ -168,23 +168,8 @@ const styles = `
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-top: 0.5px solid rgba(255,255,255,0.07);
-    padding: 12px 16px 20px;
+    padding: 16px 16px 20px;
   }
-
-  .tp-config-row {
-    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
-  }
-  .tp-config-label { font-size: 10px; color: rgba(255,255,255,0.25); letter-spacing: 0.8px; white-space: nowrap; }
-  .tp-api-input {
-    flex: 1; background: rgba(255,255,255,0.05);
-    border: 0.5px solid rgba(255,255,255,0.08);
-    border-radius: 8px; padding: 6px 10px;
-    font-size: 12px; color: rgba(255,255,255,0.55);
-    font-family: 'Inter', monospace; outline: none;
-    transition: border-color 0.2s;
-  }
-  .tp-api-input:focus { border-color: rgba(99,102,241,0.5); color: rgba(255,255,255,0.75); }
-  .tp-api-input::placeholder { color: rgba(255,255,255,0.18); }
 
   .tp-err {
     font-size: 11.5px; color: #f87171;
@@ -222,186 +207,201 @@ const styles = `
 `;
 
 function TypingIndicator() {
-    return (
-        <div className="tp-typing">
-            <span /><span /><span />
-        </div>
-    );
+  return (
+    <div className="tp-typing">
+      <span /><span /><span />
+    </div>
+  );
 }
 
 function Message({ role, content, isTyping }) {
-    const isUser = role === "user";
-    return (
-        <div className={`tp-msg${isUser ? " user" : ""}`}>
-            <div className={`tp-avatar${isUser ? " user-av" : ""}`}>
-                {isUser ? "G" : "AI"}
-            </div>
-            <div className="tp-bubble">
-                {isTyping ? <TypingIndicator /> : content}
-            </div>
-        </div>
-    );
+  const isUser = role === "user";
+  const [displayedText, setDisplayedText] = useState("");
+
+  useEffect(() => {
+    // Kalau ini chat dari user atau indikator loading ngetik, gak usah pake efek typewriter
+    if (isUser || isTyping || !content) {
+      setDisplayedText(content);
+      return;
+    }
+
+    // Reset teks jadi kosong dulu sebelum mulai efek ngetik
+    setDisplayedText("");
+    let index = 0;
+
+    // Jalankan timer buat nambahin huruf satu per satu tiap 20 milidetik
+    const intervalId = setInterval(() => {
+      setDisplayedText((prev) => prev + content.charAt(index));
+      index++;
+      if (index >= content.length) {
+        clearInterval(intervalId);
+      }
+    }, 20); // Kecepatan ngetik (20ms per karakter). Makin kecil angka, makin ngebut.
+
+    return () => clearInterval(intervalId);
+  }, [content, isUser, isTyping]);
+
+  return (
+    <div className={`tp-msg${isUser ? " user" : ""}`}>
+      <div className={`tp-avatar${isUser ? " user-av" : ""}`}>
+        {isUser ? "G" : "AI"}
+      </div>
+      <div className="tp-bubble">
+        {isTyping ? <TypingIndicator /> : displayedText}
+      </div>
+    </div>
+  );
 }
 
 export default function TechPI() {
-    const [messages, setMessages] = useState([]);
-    const [input, setInput] = useState("");
-    // Otomatis diubah ke port 8000 biar sesuai backend lo yang tadi
-    const [endpoint, setEndpoint] = useState("http://localhost:8000/chat");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-    const [status, setStatus] = useState("ready");
-    const messagesEndRef = useRef(null);
-    const textareaRef = useRef(null);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  // Alamat Render sudah dikunci mati di sini, selamat tinggal localhost!
+  const endpoint = "https://techpi-backend-ai.onrender.com/chat";
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [status, setStatus] = useState("ready");
+  const messagesEndRef = useRef(null);
+  const textareaRef = useRef(null);
 
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages, loading]);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
 
-    const statusClass = status === "error" ? "error" : status === "thinking..." ? "thinking" : "";
+  const statusClass = status === "error" ? "error" : status === "thinking..." ? "thinking" : "";
 
-    async function send() {
-        if (loading || !input.trim()) return;
-        if (!endpoint.trim()) { setError("Isi endpoint dulu ya."); return; }
+  async function send() {
+    if (loading || !input.trim()) return;
 
-        const userText = input.trim();
-        const newMsgs = [...messages, { role: "user", content: userText }];
-        setMessages(newMsgs);
-        setInput("");
-        setError("");
-        setLoading(true);
-        setStatus("thinking...");
+    const userText = input.trim();
+    const newMsgs = [...messages, { role: "user", content: userText }];
+    setMessages(newMsgs);
+    setInput("");
+    setError("");
+    setLoading(true);
+    setStatus("thinking...");
 
-        if (textareaRef.current) textareaRef.current.style.height = "auto";
+    if (textareaRef.current) textareaRef.current.style.height = "auto";
 
-        try {
-            const res = await fetch(endpoint, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ messages: newMsgs }),
-            });
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: newMsgs }),
+      });
 
-            if (!res.ok) throw new Error("HTTP " + res.status);
-            const data = await res.json();
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
 
-            const reply =
-                data.reply ||
-                data.response ||
-                data.message ||
-                data.content ||
-                data.choices?.[0]?.message?.content ||
-                JSON.stringify(data);
+      const reply =
+        data.reply ||
+        data.response ||
+        data.message ||
+        data.content ||
+        data.choices?.[0]?.message?.content ||
+        JSON.stringify(data);
 
-            setMessages([...newMsgs, { role: "assistant", content: reply }]);
-            setStatus("ready");
-        } catch (e) {
-            setError("Gagal konek: " + e.message);
-            setStatus("error");
-        }
-
-        setLoading(false);
-        textareaRef.current?.focus();
+      setMessages([...newMsgs, { role: "assistant", content: reply }]);
+      setStatus("ready");
+    } catch (e) {
+      setError("Gagal konek: " + e.message);
+      setStatus("error");
     }
 
-    function handleKey(e) {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            send();
-        }
+    setLoading(false);
+    textareaRef.current?.focus();
+  }
+
+  function handleKey(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send();
     }
+  }
 
-    function handleTextarea(e) {
-        setInput(e.target.value);
-        e.target.style.height = "auto";
-        e.target.style.height = Math.min(e.target.scrollHeight, 140) + "px";
-    }
+  function handleTextarea(e) {
+    setInput(e.target.value);
+    e.target.style.height = "auto";
+    e.target.style.height = Math.min(e.target.scrollHeight, 140) + "px";
+  }
 
-    return (
-        <>
-            <style>{styles}</style>
-            <div className="tp-root">
-                <div className="tp-bg-orb1" />
-                <div className="tp-bg-orb2" />
+  return (
+    <>
+      <style>{styles}</style>
+      <div className="tp-root">
+        <div className="tp-bg-orb1" />
+        <div className="tp-bg-orb2" />
 
-                <header className="tp-header">
-                    <div className="tp-logo-group">
-                        <div className="tp-logo-icon">TP</div>
-                        <div className="tp-logo-text">
-                            <span className="tp-logo-name">TechPI</span>
-                            <span className="tp-logo-by">by Glendon</span>
-                        </div>
-                    </div>
-                    <div className={`tp-status-pill ${statusClass}`}>
-                        <div className="tp-status-dot" />
-                        <span className="tp-status-text">{status}</span>
-                    </div>
-                </header>
-
-                <div className="tp-messages">
-                    {messages.length === 0 && !loading && (
-                        <div className="tp-empty">
-                            <div className="tp-empty-icon">
-                                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(99,102,241,0.85)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                                    <path d="M2 17l10 5 10-5" />
-                                    <path d="M2 12l10 5 10-5" />
-                                </svg>
-                            </div>
-                            <div className="tp-empty-title">Halo! Gw TechPI</div>
-                            <div className="tp-empty-sub">Sambungin ke Python AI lo lewat URL endpoint di bawah, terus mulai chat.</div>
-                        </div>
-                    )}
-
-                    {messages.map((m, i) => (
-                        <Message key={i} role={m.role} content={m.content} />
-                    ))}
-
-                    {loading && (
-                        <Message role="assistant" isTyping />
-                    )}
-
-                    <div ref={messagesEndRef} />
-                </div>
-
-                <div className="tp-bottom">
-                    <div className="tp-config-row">
-                        <span className="tp-config-label">ENDPOINT</span>
-                        <input
-                            className="tp-api-input"
-                            value={endpoint}
-                            onChange={e => setEndpoint(e.target.value)}
-                            placeholder="http://localhost:8000/chat"
-                        />
-                    </div>
-
-                    {error && <div className="tp-err">{error}</div>}
-
-                    <div className="tp-input-row">
-                        <textarea
-                            ref={textareaRef}
-                            className="tp-textarea"
-                            rows={1}
-                            value={input}
-                            onChange={handleTextarea}
-                            onKeyDown={handleKey}
-                            placeholder="Ketik pesan..."
-                        />
-                        <button
-                            className="tp-send"
-                            onClick={send}
-                            disabled={loading || !input.trim()}
-                            aria-label="Kirim"
-                        >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <line x1="22" y1="2" x2="11" y2="13" />
-                                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div className="tp-footer-text">TechPI · by Glendon</div>
-                </div>
+        <header className="tp-header">
+          <div className="tp-logo-group">
+            <div className="tp-logo-icon">TP</div>
+            <div className="tp-logo-text">
+              <span className="tp-logo-name">TechPI</span>
+              <span className="tp-logo-by">by Glendon</span>
             </div>
-        </>
-    );
+          </div>
+          <div className={`tp-status-pill ${statusClass}`}>
+            <div className="tp-status-dot" />
+            <span className="tp-status-text">{status}</span>
+          </div>
+        </header>
+
+        <div className="tp-messages">
+          {messages.length === 0 && !loading && (
+            <div className="tp-empty">
+              <div className="tp-empty-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(99,102,241,0.85)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5" />
+                  <path d="M2 12l10 5 10-5" />
+                </svg>
+              </div>
+              <div className="tp-empty-title">Halo! Gw TechPI</div>
+              <div className="tp-empty-sub">Mulai chat untuk memulai simulasi interview Tech Lead lo.</div>
+            </div>
+          )}
+
+          {messages.map((m, i) => (
+            <Message key={i} role={m.role} content={m.content} />
+          ))}
+
+          {loading && (
+            <Message role="assistant" isTyping />
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        <div className="tp-bottom">
+          {/* Kolom input endpoint lama yang mengganggu sudah resmi di-DELETED dari bumi! */}
+          {error && <div className="tp-err">{error}</div>}
+
+          <div className="tp-input-row">
+            <textarea
+              ref={textareaRef}
+              className="tp-textarea"
+              rows={1}
+              value={input}
+              onChange={handleTextarea}
+              onKeyDown={handleKey}
+              placeholder="Ketik pesan..."
+            />
+            <button
+              className="tp-send"
+              onClick={send}
+              disabled={loading || !input.trim()}
+              aria-label="Kirim"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="tp-footer-text">TechPI · by Glendon</div>
+        </div>
+      </div>
+    </>
+  );
 }
