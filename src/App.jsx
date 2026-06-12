@@ -8,7 +8,9 @@ const styles = `
     font-family: 'Inter', sans-serif;
     background: #0a0a0f;
     height: 100vh;
-    height: -webkit-fill-available; /* Biar pas di layar HP */
+    height: -webkit-fill-available;
+    width: 100vw;       /* Tambahkan ini biar selebar layar laptop */
+    max-width: 100%;    /* Tambahkan ini untuk memastikan gak over-scroll */
     display: flex;
     flex-direction: column;
     position: relative;
