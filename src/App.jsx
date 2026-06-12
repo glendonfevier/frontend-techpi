@@ -7,35 +7,51 @@ const styles = `
   .tp-root {
     font-family: 'Inter', sans-serif;
     background: #0a0a0f;
-    min-height: 100vh;
+    height: 100vh;
+    height: -webkit-fill-available; /* Biar pas di layar HP */
     display: flex;
     flex-direction: column;
     position: relative;
     overflow: hidden;
   }
 
-  .tp-bg-orb1 {
-    position: fixed; top: -100px; right: -80px;
-    width: 380px; height: 380px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(99,102,241,0.16) 0%, transparent 70%);
-    pointer-events: none; z-index: 0;
+  /* Animasi Background Motion Biar Tech Banget! */
+  @keyframes orbit-1 {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-40px, 30px) scale(1.15); }
+    100% { transform: translate(0, 0) scale(1); }
   }
-  .tp-bg-orb2 {
-    position: fixed; bottom: 60px; left: -80px;
-    width: 300px; height: 300px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(20,184,166,0.1) 0%, transparent 70%);
-    pointer-events: none; z-index: 0;
+  @keyframes orbit-2 {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(50px, -40px) scale(0.9); }
+    100% { transform: translate(0, 0) scale(1); }
   }
 
+  .tp-bg-orb1 {
+    position: absolute; top: -100px; right: -80px;
+    width: 380px; height: 380px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+    animation: orbit-1 12s ease-in-out infinite;
+  }
+  .tp-bg-orb2 {
+    position: absolute; bottom: 60px; left: -80px;
+    width: 350px; height: 350px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(20,184,166,0.12) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+    animation: orbit-2 16s ease-in-out infinite;
+  }
+
+  /* Header Kunci Mati di Atas */
   .tp-header {
-    padding: 18px 24px 14px;
+    padding: 16px 24px;
     display: flex; align-items: center; justify-content: space-between;
     border-bottom: 0.5px solid rgba(255,255,255,0.07);
-    position: relative; z-index: 10;
-    background: rgba(10,10,15,0.85);
+    z-index: 10;
+    background: rgba(10,10,15,0.8);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    position: sticky; top: 0;
+    flex-shrink: 0;
   }
 
   .tp-logo-group { display: flex; align-items: center; gap: 10px; }
@@ -89,17 +105,20 @@ const styles = `
   .tp-status-pill.error .tp-status-text { color: #f87171; }
   .tp-status-pill.thinking .tp-status-text { color: #818cf8; }
 
+  /* Area Chat獨立 Scrollable Area */
   .tp-messages {
-    flex: 1; overflow-y: auto; padding: 24px 20px 16px;
+    flex: 1; 
+    overflow-y: auto; 
+    padding: 24px 20px;
     display: flex; flex-direction: column; gap: 16px;
     position: relative; z-index: 2;
     scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.08) transparent;
   }
 
   .tp-empty {
-    flex: 1; display: flex; flex-direction: column;
+    margin: auto; display: flex; flex-direction: column;
     align-items: center; justify-content: center; gap: 10px;
-    padding: 60px 24px; margin: auto;
+    padding: 40px 24px;
   }
   .tp-empty-icon {
     width: 60px; height: 60px; border-radius: 18px;
@@ -133,7 +152,7 @@ const styles = `
   }
 
   .tp-bubble {
-    max-width: 70%; padding: 11px 15px;
+    max-width: 75%; padding: 11px 15px;
     border-radius: 18px 18px 18px 5px;
     font-size: 14px; line-height: 1.65; color: rgba(255,255,255,0.88);
     background: rgba(255,255,255,0.07);
@@ -162,13 +181,15 @@ const styles = `
     40% { opacity: 1; transform: scale(1.2); }
   }
 
+  /* Kotak Chat Kunci Mati di Bawah Display */
   .tp-bottom {
-    position: sticky; bottom: 0; z-index: 10;
-    background: rgba(10,10,15,0.9);
+    background: rgba(10,10,15,0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-top: 0.5px solid rgba(255,255,255,0.07);
-    padding: 16px 16px 20px;
+    padding: 14px 16px env(safe-area-inset-bottom, 16px);
+    z-index: 10;
+    flex-shrink: 0;
   }
 
   .tp-err {
