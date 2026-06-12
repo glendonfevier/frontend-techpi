@@ -2,46 +2,76 @@ import React from 'react';
 import { useState, useRef, useEffect } from "react";
 
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600&family=Space+Grotesk:wght=400;500;600;700&display=swap');
 
   .tp-root {
     font-family: 'Inter', sans-serif;
     background: #0a0a0f;
     height: 100vh;
     height: -webkit-fill-available;
-    width: 100vw;       /* Tambahkan ini biar selebar layar laptop */
-    max-width: 100%;    /* Tambahkan ini untuk memastikan gak over-scroll */
+    width: 100vw;       
+    max-width: 100%;    
     display: flex;
     flex-direction: column;
     position: relative;
     overflow: hidden;
   }
 
-  /* Animasi Background Motion Biar Tech Banget! */
-  @keyframes orbit-1 {
-    0% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-40px, 30px) scale(1.15); }
-    100% { transform: translate(0, 0) scale(1); }
+  /* =======================================================
+     ANIMATION MOTION ALA GEMINI (Aura Fluid & Glowing)
+     ======================================================= */
+  @keyframes gemini-motion-1 {
+    0% {
+      transform: translate(0px, 0px) scale(1) rotate(0deg);
+      filter: blur(80px);
+    }
+    33% {
+      transform: translate(60px, -40px) scale(1.25) rotate(120deg);
+      filter: blur(100px);
+      background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%);
+    }
+    66% {
+      transform: translate(-40px, 50px) scale(0.85) rotate(240deg);
+      filter: blur(70px);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1) rotate(360deg);
+      filter: blur(80px);
+    }
   }
-  @keyframes orbit-2 {
-    0% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(50px, -40px) scale(0.9); }
-    100% { transform: translate(0, 0) scale(1); }
+
+  @keyframes gemini-motion-2 {
+    0% {
+      transform: translate(0px, 0px) scale(1) rotate(0deg);
+      filter: blur(60px);
+    }
+    50% {
+      transform: translate(-70px, 40px) scale(1.35) rotate(-180deg);
+      filter: blur(90px);
+      background: radial-gradient(circle, rgba(20,184,166,0.2) 0%, transparent 70%);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1) rotate(-360deg);
+      filter: blur(60px);
+    }
   }
 
   .tp-bg-orb1 {
-    position: absolute; top: -100px; right: -80px;
-    width: 380px; height: 380px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+    position: absolute; top: -80px; right: -80px;
+    width: 550px; height: 550px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(99,102,241,0.16) 0%, transparent 70%);
     pointer-events: none; z-index: 0;
-    animation: orbit-1 12s ease-in-out infinite;
+    animation: gemini-motion-1 18s infinite linear;
+    will-change: transform, filter;
   }
+
   .tp-bg-orb2 {
-    position: absolute; bottom: 60px; left: -80px;
-    width: 350px; height: 350px; border-radius: 50%;
+    position: absolute; bottom: -80px; left: -80px;
+    width: 500px; height: 500px; border-radius: 50%;
     background: radial-gradient(circle, rgba(20,184,166,0.12) 0%, transparent 70%);
     pointer-events: none; z-index: 0;
-    animation: orbit-2 16s ease-in-out infinite;
+    animation: gemini-motion-2 22s infinite linear;
+    will-change: transform, filter;
   }
 
   /* Header Kunci Mati di Atas */
@@ -107,7 +137,7 @@ const styles = `
   .tp-status-pill.error .tp-status-text { color: #f87171; }
   .tp-status-pill.thinking .tp-status-text { color: #818cf8; }
 
-  /* Area Chat獨立 Scrollable Area */
+  /* Area Chat Scrollable Area */
   .tp-messages {
     flex: 1; 
     overflow-y: auto; 
@@ -242,24 +272,21 @@ function Message({ role, content, isTyping }) {
   const [displayedText, setDisplayedText] = useState("");
 
   useEffect(() => {
-    // Kalau ini chat dari user atau indikator loading ngetik, gak usah pake efek typewriter
     if (isUser || isTyping || !content) {
       setDisplayedText(content);
       return;
     }
 
-    // Reset teks jadi kosong dulu sebelum mulai efek ngetik
     setDisplayedText("");
     let index = 0;
 
-    // Jalankan timer buat nambahin huruf satu per satu tiap 20 milidetik
     const intervalId = setInterval(() => {
       setDisplayedText((prev) => prev + content.charAt(index));
       index++;
       if (index >= content.length) {
         clearInterval(intervalId);
       }
-    }, 20); // Kecepatan ngetik (20ms per karakter). Makin kecil angka, makin ngebut.
+    }, 20);
 
     return () => clearInterval(intervalId);
   }, [content, isUser, isTyping]);
@@ -279,7 +306,6 @@ function Message({ role, content, isTyping }) {
 export default function TechPI() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  // Alamat Render sudah dikunci mati di sini, selamat tinggal localhost!
   const endpoint = "https://techpi-backend-ai.onrender.com/chat";
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -396,7 +422,6 @@ export default function TechPI() {
         </div>
 
         <div className="tp-bottom">
-          {/* Kolom input endpoint lama yang mengganggu sudah resmi di-DELETED dari bumi! */}
           {error && <div className="tp-err">{error}</div>}
 
           <div className="tp-input-row">
