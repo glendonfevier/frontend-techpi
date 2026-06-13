@@ -350,7 +350,7 @@ export default function TechPI() {
               <img src={techpiLogo} alt="TechPI Logo" />
             </div>
             <div className="tp-logo-text">
-              <span className="tp-logo-name">TechPI</span>
+              <span className="tp-logo-name">TechPI AI</span>
               <span className="tp-logo-by">by Glendon</span>
             </div>
           </div>
@@ -364,7 +364,7 @@ export default function TechPI() {
           {messages.length === 0 && !loading && (
             <div className="tp-empty">
               <div className="tp-empty-icon">✨</div>
-              <div className="tp-empty-title">TechPI AI Interviewer</div>
+              <div className="tp-empty-title">TechPI AI</div>
               <div className="tp-empty-sub">Simulasi interview teknis modern bersama Tech Lead. Ketik "Halo" untuk memulai.</div>
             </div>
           )}
@@ -400,7 +400,7 @@ export default function TechPI() {
                 </svg>
               </button>
             </div>
-            <div className="tp-footer-text">TechPI • Elegant Light Version</div>
+            <div className="tp-footer-text">TechPI • Made by Glendon</div>
           </div>
         </div>
       </div>
