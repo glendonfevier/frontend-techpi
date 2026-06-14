@@ -363,7 +363,9 @@ export default function TechPI() {
         <div className="tp-messages" ref={messagesContainerRef}>
           {messages.length === 0 && !loading && (
             <div className="tp-empty">
-              <div className="tp-empty-icon">✨</div>
+              <div className="tp-logo-box">
+                <img src={techpiLogo} alt="TechPI Logo" />
+              </div>
               <div className="tp-empty-title">TechPI AI</div>
               <div className="tp-empty-sub">Simulasi interview teknis modern bersama Tech Lead. Ketik "Halo" untuk memulai.</div>
             </div>
