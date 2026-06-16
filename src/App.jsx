@@ -227,7 +227,7 @@ export default function TechPI() {
           <div className="tp-logo-group">
             <div className="tp-logo-box"><img src={techpiLogo} alt="Logo" /></div>
             <div className="tp-logo-text">
-              <span className="tp-logo-name">TechPI</span>
+              <span className="tp-logo-name">AceCVS AI</span>
               <span className="tp-logo-by">by Glendon</span>
             </div>
           </div>
